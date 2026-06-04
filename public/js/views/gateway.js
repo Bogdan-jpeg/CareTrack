@@ -57,7 +57,7 @@ export class SimSource {
     this.timers.push(setInterval(() => {
       let p = 76 + Math.round(Math.sin(Date.now() / 9000) * 4 + (Math.random() * 4 - 2));
       if (this._spikePulse > 0) { p = 132 + Math.round(Math.random() * 6); this._spikePulse--; }
-      const temp = +(36.7 + Math.sin(Date.now() / 20000) * 0.15 + (Math.random() * 0.08 - 0.04)).toFixed(1);
+      const temp = +(22.5 + Math.sin(Date.now() / 20000) * 0.4 + (Math.random() * 0.1 - 0.05)).toFixed(1);
       const hum = 45 + Math.round(Math.sin(Date.now() / 15000) * 4 + (Math.random() * 2 - 1));
       const spo2 = 97 + Math.round(Math.random() * 2);
       this.emit('vitals', { p, t: temp, h: hum, s: spo2 });
@@ -86,7 +86,7 @@ export class SimSource {
     this.emit('battery', 86);
     this.timers.push(setInterval(() => this.emit('battery', 84 + Math.round(Math.random() * 3)), 20000));
     // fire one vitals + accel immediately so the UI isn't empty
-    setTimeout(() => this.emit('vitals', { p: 78, t: 36.7, h: 45, s: 98 }), 150);
+    setTimeout(() => this.emit('vitals', { p: 78, t: 22.5, h: 45, s: 98 }), 150);
     return true;
   }
   triggerHighPulse() { this._spikePulse = 4; }   // ~40 s of high pulse

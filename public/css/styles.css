@@ -46,7 +46,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
+html, body { margin: 0; padding: 0; overflow-x: hidden; }
 body {
   font-family: var(--ui);
   background:
@@ -346,9 +346,30 @@ table.tbl tr:last-child td { border-bottom: none; }
   .grid-2 { grid-template-columns: 1fr; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
   .form-grid { grid-template-columns: 1fr; }
-  .topnav { display: none; }
   .page-head h1 { font-size: 24px; }
   main.wrap { padding: 18px 14px 80px; }
+
+  /* top bar: keep brand + controls on row 1, move the nav to a scrollable row 2 */
+  .topbar-in { flex-wrap: wrap; padding: 10px 14px; gap: 8px 10px; }
+  .brand span { font-size: 18px; }
+  .topbar-right { gap: 8px; }
+  .user-chip .meta { display: none; }        /* keep the avatar, drop the long name/role text */
+  .topnav {
+    order: 3;                                 /* second row, full width */
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    padding-bottom: 2px;
+    scrollbar-width: none;                     /* hide the scrollbar, still swipeable */
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+  .topnav a { white-space: nowrap; flex: none; }
+}
+@media (max-width: 380px) {
+  .brand span { display: none; }              /* very narrow: keep just the logo mark */
 }
 
 .row { display: flex; gap: 10px; align-items: center; }

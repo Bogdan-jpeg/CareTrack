@@ -6,7 +6,7 @@
  *
  * The cache name is versioned; bumping it makes `activate` purge older caches.
  */
-const CACHE = 'caretrack-v2';
+const CACHE = 'caretrack-v3';
 const SHELL = [
   '/',
   '/index.html',
