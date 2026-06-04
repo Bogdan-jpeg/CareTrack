@@ -1,0 +1,29 @@
+{
+  "name": "caretrack-server",
+  "version": "1.0.0",
+  "description": "CareTrack cloud backend — wearable health monitoring (doctor/patient/gateway)",
+  "type": "commonjs",
+  "main": "server.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js",
+    "reset": "node seed.js --reset",
+    "test": "node test/run-all.js",
+    "test:backend": "node test/smoke.js",
+    "test:frontend": "node test/frontend.js",
+    "test:gateway": "node test/gateway-logic.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "pdfkit": "^0.15.0"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}

@@ -1,0 +1,15 @@
+# Render Blueprint — deploys the CareTrack cloud (Node + SQLite) as a free web service.
+# You can either use this Blueprint, or set the same options by hand in the Render dashboard.
+services:
+  - type: web
+    name: caretrack
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
+      - key: CARETRACK_JWT_SECRET   # signs login tokens; Render generates a strong value
+        generateValue: true
+      - key: CARETRACK_AUTOSEED     # re-create demo data on boot (free disk resets on sleep)
+        value: "1"
