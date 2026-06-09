@@ -86,6 +86,16 @@ function seed() {
   const pat2User = db.prepare('INSERT INTO users (role, email, password_hash, full_name, locale) VALUES (?,?,?,?,?)')
     .run('patient', 'pacient2@caretrack.ro', hash('Pacient#2025'), 'Ionescu Maria', 'ro').lastInsertRowid;
 
+  // ---- extra accounts for the multi-phone demo (rename/extend freely) ----
+  const doctor2 = db.prepare('INSERT INTO users (role, email, password_hash, full_name, locale) VALUES (?,?,?,?,?)')
+    .run('doctor', 'medic2@caretrack.ro', hash('Medic#2025'), 'Dr. Elena Vasilescu', 'ro').lastInsertRowid;
+  const pat3User = db.prepare('INSERT INTO users (role, email, password_hash, full_name, locale) VALUES (?,?,?,?,?)')
+    .run('patient', 'pacient3@caretrack.ro', hash('Pacient#2025'), 'Marin Gheorghe', 'ro').lastInsertRowid;
+  const pat4User = db.prepare('INSERT INTO users (role, email, password_hash, full_name, locale) VALUES (?,?,?,?,?)')
+    .run('patient', 'pacient4@caretrack.ro', hash('Pacient#2025'), 'Dumitru Ileana', 'ro').lastInsertRowid;
+  const pat5User = db.prepare('INSERT INTO users (role, email, password_hash, full_name, locale) VALUES (?,?,?,?,?)')
+    .run('patient', 'pacient5@caretrack.ro', hash('Pacient#2025'), 'Stan Nicolae', 'ro').lastInsertRowid;
+
   // ---- patients ----
   db.prepare(`INSERT INTO patients
     (id, user_id, doctor_id, first_name, last_name, dob, cnp, gender,
@@ -111,11 +121,53 @@ function seed() {
     'Fără alergii cunoscute.',
     'Consult cardiologic 2025-02: tensiune controlată medicamentos.');
 
+  db.prepare(`INSERT INTO patients
+    (id, user_id, doctor_id, first_name, last_name, dob, cnp, gender,
+     addr_street, addr_number, addr_city, addr_county, addr_postal,
+     phone, email, profession, workplace, medical_history, allergies, cardio_consults)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+    'PAT-003', pat3User, doctorId, 'Gheorghe', 'Marin', '1950-06-15', '1500615350013', 'M',
+    'Str. Brândușei', '7', 'Timișoara', 'Timiș', '300003',
+    '+40721000333', 'pacient3@caretrack.ro', 'Mecanic pensionar', '—',
+    'Fibrilație atrială paroxistică, hipertensiune arterială.',
+    'Fără alergii cunoscute.',
+    'Consult cardiologic 2025-01: ritm controlat, recomandat Holter periodic.');
+
+  db.prepare(`INSERT INTO patients
+    (id, user_id, doctor_id, first_name, last_name, dob, cnp, gender,
+     addr_street, addr_number, addr_city, addr_county, addr_postal,
+     phone, email, profession, workplace, medical_history, allergies, cardio_consults)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+    'PAT-004', pat4User, doctorId, 'Ileana', 'Dumitru', '1956-03-22', '2560322350024', 'F',
+    'Str. Mureș', '23', 'Timișoara', 'Timiș', '300004',
+    '+40721000444', 'pacient4@caretrack.ro', 'Contabilă pensionară', '—',
+    'Diabet zaharat tip 2, dislipidemie.',
+    'Alergie la sulfamide.',
+    'Consult cardiologic 2024-12: fără modificări semnificative.');
+
+  db.prepare(`INSERT INTO patients
+    (id, user_id, doctor_id, first_name, last_name, dob, cnp, gender,
+     addr_street, addr_number, addr_city, addr_county, addr_postal,
+     phone, email, profession, workplace, medical_history, allergies, cardio_consults)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+    'PAT-005', pat5User, doctor2, 'Nicolae', 'Stan', '1948-11-09', '1481109350015', 'M',
+    'Calea Aradului', '102', 'Timișoara', 'Timiș', '300005',
+    '+40721000555', 'pacient5@caretrack.ro', 'Profesor pensionar', '—',
+    'Cardiopatie ischemică, status post-infarct (2019).',
+    'Fără alergii cunoscute.',
+    'Consult cardiologic 2025-03: funcție sistolică ușor redusă, monitorizare recomandată.');
+
   // ---- devices ----
   db.prepare("INSERT INTO devices (id, patient_id, model, serial, firmware_version, ble_name, status, paired_at, last_seen) VALUES (?,?,?,?,?,?,?,datetime('now'),datetime('now'))")
     .run('dev-001', 'PAT-001', 'CareTrack ESP32', 'CT-ESP32-0001', '1.0.0', 'CareTrack-001', 'paired');
   db.prepare("INSERT INTO devices (id, patient_id, model, serial, firmware_version, ble_name, status, paired_at, last_seen) VALUES (?,?,?,?,?,?,?,datetime('now'),datetime('now'))")
     .run('dev-002', 'PAT-002', 'CareTrack ESP32', 'CT-ESP32-0002', '1.0.0', 'CareTrack-002', 'paired');
+  db.prepare("INSERT INTO devices (id, patient_id, model, serial, firmware_version, ble_name, status, paired_at, last_seen) VALUES (?,?,?,?,?,?,?,datetime('now'),datetime('now'))")
+    .run('dev-003', 'PAT-003', 'CareTrack ESP32', 'CT-ESP32-0003', '1.0.0', 'CareTrack-003', 'paired');
+  db.prepare("INSERT INTO devices (id, patient_id, model, serial, firmware_version, ble_name, status, paired_at, last_seen) VALUES (?,?,?,?,?,?,?,datetime('now'),datetime('now'))")
+    .run('dev-004', 'PAT-004', 'CareTrack ESP32', 'CT-ESP32-0004', '1.0.0', 'CareTrack-004', 'paired');
+  db.prepare("INSERT INTO devices (id, patient_id, model, serial, firmware_version, ble_name, status, paired_at, last_seen) VALUES (?,?,?,?,?,?,?,datetime('now'),datetime('now'))")
+    .run('dev-005', 'PAT-005', 'CareTrack ESP32', 'CT-ESP32-0005', '1.0.0', 'CareTrack-005', 'paired');
 
   // ---- rules (thresholds aligned with the acceptance tests) ----
   db.prepare(`INSERT INTO rules (patient_id, min_pulse, max_pulse, min_temp, max_temp, min_humidity, max_humidity, min_spo2, persistence_seconds, updated_by)
@@ -124,10 +176,22 @@ function seed() {
   db.prepare(`INSERT INTO rules (patient_id, min_pulse, max_pulse, min_temp, max_temp, min_humidity, max_humidity, min_spo2, persistence_seconds, updated_by)
               VALUES (?,?,?,?,?,?,?,?,?,?)`)
     .run('PAT-002', 55, 115, 15, 30, 30, 65, 92, 0, doctorId);
+  db.prepare(`INSERT INTO rules (patient_id, min_pulse, max_pulse, min_temp, max_temp, min_humidity, max_humidity, min_spo2, persistence_seconds, updated_by)
+              VALUES (?,?,?,?,?,?,?,?,?,?)`)
+    .run('PAT-003', 50, 120, 15, 30, 30, 65, 92, 0, doctorId);
+  db.prepare(`INSERT INTO rules (patient_id, min_pulse, max_pulse, min_temp, max_temp, min_humidity, max_humidity, min_spo2, persistence_seconds, updated_by)
+              VALUES (?,?,?,?,?,?,?,?,?,?)`)
+    .run('PAT-004', 55, 115, 15, 30, 30, 65, 92, 0, doctorId);
+  db.prepare(`INSERT INTO rules (patient_id, min_pulse, max_pulse, min_temp, max_temp, min_humidity, max_humidity, min_spo2, persistence_seconds, updated_by)
+              VALUES (?,?,?,?,?,?,?,?,?,?)`)
+    .run('PAT-005', 50, 118, 15, 30, 30, 65, 92, 0, doctor2);
 
   // ---- history so charts/ECG aren't empty on first load ----
   seedHistory('PAT-001', 'dev-001', 78, 22.0);
   seedHistory('PAT-002', 'dev-002', 82, 22.5);
+  seedHistory('PAT-003', 'dev-003', 76, 22.2);
+  seedHistory('PAT-004', 'dev-004', 80, 22.3);
+  seedHistory('PAT-005', 'dev-005', 74, 22.1);
 
   // ---- a few sample alerts (one open, one already closed) ----
   const now = Date.now();
@@ -148,12 +212,34 @@ function seed() {
          'Exerciții de respirație și mobilitate articulară.',
          new Date(now).toISOString().slice(0, 10),
          new Date(now + 14 * 86400000).toISOString().slice(0, 10));
+  db.prepare(`INSERT INTO recommendations (patient_id, doctor_id, type, title, daily_duration_min, instructions, start_date, end_date)
+              VALUES (?,?,?,?,?,?,?,?)`)
+    .run('PAT-003', doctorId, 'walk', 'Plimbare zilnică', 25,
+         'Plimbare în ritm lejer, de preferință dimineața.',
+         new Date(now).toISOString().slice(0, 10),
+         new Date(now + 30 * 86400000).toISOString().slice(0, 10));
+  db.prepare(`INSERT INTO recommendations (patient_id, doctor_id, type, title, daily_duration_min, instructions, start_date, end_date)
+              VALUES (?,?,?,?,?,?,?,?)`)
+    .run('PAT-004', doctorId, 'exercise', 'Mobilitate articulară', 20,
+         'Exerciții ușoare de mobilitate și întindere.',
+         new Date(now).toISOString().slice(0, 10),
+         new Date(now + 21 * 86400000).toISOString().slice(0, 10));
+  db.prepare(`INSERT INTO recommendations (patient_id, doctor_id, type, title, daily_duration_min, instructions, start_date, end_date)
+              VALUES (?,?,?,?,?,?,?,?)`)
+    .run('PAT-005', doctor2, 'walk', 'Plimbare ușoară', 20,
+         'Plimbare scurtă, evitând efortul intens; pauze la nevoie.',
+         new Date(now).toISOString().slice(0, 10),
+         new Date(now + 30 * 86400000).toISOString().slice(0, 10));
 
   console.log('✓ Seed complete.');
-  console.log('  Doctor :  medic.test@caretrack.ro / Medic#2025');
+  console.log('  Doctor :  medic.test@caretrack.ro / Medic#2025   (Dr. Gheorghe Ionescu — PAT-001..004)');
+  console.log('  Doctor :  medic2@caretrack.ro     / Medic#2025   (Dr. Elena Vasilescu — PAT-005)');
   console.log('  Admin  :  admin@caretrack.ro      / Admin#2025');
   console.log('  Patient:  pacient1@caretrack.ro   / Pacient#2025  (PAT-001 Popescu Andrei)');
   console.log('  Patient:  pacient2@caretrack.ro   / Pacient#2025  (PAT-002 Ionescu Maria)');
+  console.log('  Patient:  pacient3@caretrack.ro   / Pacient#2025  (PAT-003 Marin Gheorghe)');
+  console.log('  Patient:  pacient4@caretrack.ro   / Pacient#2025  (PAT-004 Dumitru Ileana)');
+  console.log('  Patient:  pacient5@caretrack.ro   / Pacient#2025  (PAT-005 Stan Nicolae)');
 }
 
 if (require.main === module) {
