@@ -59,12 +59,17 @@ npm run reset      # wipes the database and re-seeds from scratch
 
 Seed accounts:
 
-| Role    | Email                     | Password       | Notes                         |
-|---------|---------------------------|----------------|-------------------------------|
-| Doctor  | medic.test@caretrack.ro   | `Medic#2025`   | sees PAT-001 and PAT-002      |
-| Admin   | admin@caretrack.ro        | `Admin#2025`   | sees everything               |
-| Patient | pacient1@caretrack.ro     | `Pacient#2025` | linked to PAT-001 (Popescu A.)|
-| Patient | pacient2@caretrack.ro     | `Pacient#2025` | linked to PAT-002 (Ionescu M.)|
+| Role     | Email                     | Password       | Notes                         |
+|----------|---------------------------|----------------|-------------------------------|
+| Admin    | admin@caretrack.ro        | `Admin#2025`   | sees everything               |
+| Doctor   | medic.test@caretrack.ro   | `Medic#2025`   | sees PAT-001 and PAT-002      |
+| Doctor 2 | medic2@caretrack.ro       | `Medic#2025`   | sees PAT-005                  |
+| Patient  | pacient1@caretrack.ro     | `Pacient#2025` | linked to PAT-001 (Popescu A.)|
+| Patient  | pacient2@caretrack.ro     | `Pacient#2025` | linked to PAT-002 (Ionescu M.)|
+| Patient  | pacient3@caretrack.ro     | `Pacient#2025` | linked to PAT-003 (Marin G.)  |
+| Patient  | pacient4@caretrack.ro     | `Pacient#2025` | linked to PAT-004 (Dumitru I.)|
+| Patient  | pacient5@caretrack.ro     | `Pacient#2025` | linked to PAT-005 (Stan N.)   |
+
 
 ## Run
 
