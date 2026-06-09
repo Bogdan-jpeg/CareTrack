@@ -12,7 +12,20 @@ require('./db'); // ensure schema exists before routes load
 // Optional: seed demo data at boot if the database is empty. Useful on hosts with
 // ephemeral storage (e.g. Render's free tier resets the disk on restart/sleep), so
 // the demo accounts and data are always present. Enable with CARETRACK_AUTOSEED=1.
-if (process.env.CARETRACK_AUTOSEED === '1') {
+// Force a one-time wipe + reseed at boot. Use this when the database already holds
+// old/stale data that plain auto-seed would skip (auto-seed only runs on an EMPTY DB).
+// Set CARETRACK_RESEED=1, deploy once to load the data, then REMOVE it so ordinary
+// restarts don't wipe live data.
+if (process.env.CARETRACK_RESEED === '1') {
+  try {
+    const { seed, reset } = require('./seed');
+    reset();
+    seed();
+    console.log('Force-reseeded demo data (CARETRACK_RESEED=1).');
+  } catch (e) {
+    console.error('Force reseed at boot failed:', e);
+  }
+} else if (process.env.CARETRACK_AUTOSEED === '1') {
   try {
     const { seed, alreadySeeded } = require('./seed');
     if (!alreadySeeded()) {

@@ -9,10 +9,12 @@
  * thresholds), alerts, recommendations and audit_logs.
  */
 const path = require('path');
+const fs = require('fs');
 const { DatabaseSync } = require('node:sqlite');
 
 const DB_PATH = process.env.CARETRACK_DB || path.join(__dirname, 'data', 'caretrack.db');
 
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });   // ensure the folder exists (it's gitignored)
 const db = new DatabaseSync(DB_PATH);
 db.exec('PRAGMA journal_mode = WAL');
 db.exec('PRAGMA foreign_keys = ON');
