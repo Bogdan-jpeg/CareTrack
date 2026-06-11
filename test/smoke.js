@@ -62,7 +62,7 @@ async function main() {
     // TA-03 list patients
     r = await fetch(base + '/patients', { headers: J(dtok) });
     d = await r.json();
-    Array.isArray(d) && d.length === 2 ? ok(`TA-03 doctor sees ${d.length} patients`) : no('TA-03 patient list', d);
+    Array.isArray(d) && d.length === 4 ? ok(`TA-03 doctor sees ${d.length} patients (PAT-001..004)`) : no('TA-03 patient list', d);
 
     // TA-05 full fiche
     r = await fetch(base + '/patients/PAT-001', { headers: J(dtok) });

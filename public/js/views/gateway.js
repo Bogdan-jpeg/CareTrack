@@ -182,6 +182,10 @@ export class Gateway {
 
   /* ---- 4c: evaluate each 10 s measurement locally against doctor's limits ---- */
   onVitals(v) {
+    // A pulse-oximeter value of 0 means "no finger on the sensor" — the absence of
+    // a measurement, not a measurement of 0. Normalise to null so it is neither
+    // displayed (shows —), nor alerted on locally, nor included in the 30 s average.
+    v = { ...v, p: v.p > 0 ? v.p : null, s: v.s > 0 ? v.s : null };
     this.latest = { ...this.latest, pulse: v.p, temperature: v.t, humidity: v.h, spo2: v.s };
     this.vitalsWindow.push(v);
     this.ui.setVitals(this.latest, this.breaches(v));

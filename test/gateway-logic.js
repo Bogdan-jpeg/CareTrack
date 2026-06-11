@@ -117,6 +117,24 @@ async function main() {
   await g2.flush(); // retries A, then B, C
   (sent.join('') === 'ABC') ? ok('offline queue retries in FIFO order (A,B,C) after a failure') : no('FIFO order', sent);
 
+  // --- sensor-off: pulse/SpO₂ of 0 (no finger) must not warn, and must not skew the average ---
+  warnings.length = 0; jobs.length = 0;
+  g.lastAnomaly = {};            // clear throttles from the earlier checks
+  g.vitalsWindow.length = 0;     // start a fresh 30 s window
+  g.onVitals({ p: 0, t: 36.7, h: 45, s: 0 });    // finger off the MAX30102
+  (warnings.length === 0 && jobs.filter((j) => j.kind === 'alert').length === 0)
+    ? ok('sensor-off (pulse 0, SpO2 0) raises no warning and queues no alert')
+    : no('sensor-off warning', { warnings, jobs });
+  g.onVitals({ p: 80, t: 36.7, h: 45, s: 98 });  // finger back on
+  jobs.length = 0;
+  g.flushWindow();
+  const vit2 = jobs.find((j) => j.kind === 'vitals');
+  const p2 = vit2 && vit2.items.find((i) => i.type === 'pulse');
+  const s2 = vit2 && vit2.items.find((i) => i.type === 'spo2');
+  (p2 && p2.value === 80 && s2 && s2.value === 98)
+    ? ok('30 s average ignores sensor-off zeros (pulse avg of [0,80] -> 80, not 40)')
+    : no('sensor-off average', vit2 && vit2.items);
+
   console.log('\n===================================');
   console.log(`  PASSED: ${pass}    FAILED: ${fail}`);
   console.log('===================================');
