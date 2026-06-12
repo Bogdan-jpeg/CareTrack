@@ -44,6 +44,7 @@ async function main() {
 
   const rules = { min_pulse: 50, max_pulse: 120, min_temp: 35.5, max_temp: 38, min_humidity: 30, max_humidity: 65, min_spo2: 92 };
   const g = new Gateway({ source, patientId: 'PAT-001', deviceId: 'dev-001', rules, ui });
+  g.hasContact = true;   // sensor already in contact & settled for the checks below
 
   // capture queued cloud jobs instead of sending them
   const jobs = [];
@@ -125,14 +126,22 @@ async function main() {
   (warnings.length === 0 && jobs.filter((j) => j.kind === 'alert').length === 0)
     ? ok('sensor-off (pulse 0, SpO2 0) raises no warning and queues no alert')
     : no('sensor-off warning', { warnings, jobs });
-  g.onVitals({ p: 80, t: 36.7, h: 45, s: 98 });  // finger back on
+
+  // --- warm-up: the first readings after regaining contact must not alert either ---
+  g.onVitals({ p: 36, t: 36.7, h: 45, s: 56 });  // settling values right after contact
+  (warnings.length === 0 && jobs.filter((j) => j.kind === 'alert').length === 0)
+    ? ok('settling readings just after contact (36 BPM / 56%) raise no warning')
+    : no('warm-up gate', { warnings, jobs });
+
+  g.settleUntil = 0;                              // pretend the settle window elapsed
+  g.onVitals({ p: 80, t: 36.7, h: 45, s: 98 });  // stabilised reading
   jobs.length = 0;
   g.flushWindow();
   const vit2 = jobs.find((j) => j.kind === 'vitals');
   const p2 = vit2 && vit2.items.find((i) => i.type === 'pulse');
   const s2 = vit2 && vit2.items.find((i) => i.type === 'spo2');
   (p2 && p2.value === 80 && s2 && s2.value === 98)
-    ? ok('30 s average ignores sensor-off zeros (pulse avg of [0,80] -> 80, not 40)')
+    ? ok('30 s average ignores sensor-off zeros AND settling samples (avg -> 80, not 39)')
     : no('sensor-off average', vit2 && vit2.items);
 
   console.log('\n===================================');

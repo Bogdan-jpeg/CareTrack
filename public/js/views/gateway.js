@@ -185,12 +185,25 @@ export class Gateway {
     // A pulse-oximeter value of 0 means "no finger on the sensor" — the absence of
     // a measurement, not a measurement of 0. Normalise to null so it is neither
     // displayed (shows —), nor alerted on locally, nor included in the 30 s average.
-    v = { ...v, p: v.p > 0 ? v.p : null, s: v.s > 0 ? v.s : null };
-    this.latest = { ...this.latest, pulse: v.p, temperature: v.t, humidity: v.h, spo2: v.s };
-    this.vitalsWindow.push(v);
-    this.ui.setVitals(this.latest, this.breaches(v));
+    // SpO₂ below 70 % is outside the sensor's reliable range (poor contact /
+    // settling) and is treated the same way.
+    v = { ...v, p: v.p > 0 ? v.p : null, s: (v.s >= 70 && v.s <= 100) ? v.s : null };
 
-    const breaches = this.breaches(v);
+    // Warm-up gate: right after the finger (re)gains contact, the optical readings
+    // need a short time to stabilise. Show them, but keep them out of the local
+    // warnings and the 30 s average until the settle window has passed.
+    const nowMs = Date.now();
+    const hasContact = v.p != null || v.s != null;
+    if (hasContact && !this.hasContact) this.settleUntil = nowMs + 20000;
+    this.hasContact = hasContact;
+    const settling = hasContact && nowMs < (this.settleUntil || 0);
+    const vEval = settling ? { ...v, p: null, s: null } : v;
+
+    this.latest = { ...this.latest, pulse: v.p, temperature: v.t, humidity: v.h, spo2: v.s };
+    this.vitalsWindow.push(vEval);
+    this.ui.setVitals(this.latest, this.breaches(vEval));
+
+    const breaches = this.breaches(vEval);
     for (const b of breaches) {
       // The mobile app raises the warning (banner + notification).
       this.ui.raiseWarning(b);
